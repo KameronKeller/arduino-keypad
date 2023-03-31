@@ -1,70 +1,73 @@
-/*
+#include <Keyboard.h> // The main library for sending keystrokes.
 
-  Input Pull-up Serial
-
-  This example demonstrates the use of pinMode(INPUT_PULLUP). It reads a digital
-
-  input on pin 2 and prints the results to the Serial Monitor.
-
-  The circuit:
-
-  - momentary switch attached from pin 2 to ground
-
-  - built-in LED on pin 13
-
-  Unlike pinMode(INPUT), there is no pull-down resistor necessary. An internal
-
-  20K-ohm resistor is pulled to 5V. This configuration causes the input to read
-
-  HIGH when the switch is open, and LOW when it is closed.
-
-  created 14 Mar 2012
-
-  by Scott Fitzgerald
-
-  This example code is in the public domain.
-
-  https://www.arduino.cc/en/Tutorial/InputPullupSerial
-
-*/
+const int DEFAULT_DELAY = 100;
 
 void setup() {
 
   //start serial connection
-
   Serial.begin(9600);
 
-  //configure pin 2 as an input and enable the internal pull-up resistor
-
+  pinMode(3, INPUT_PULLUP);
+  pinMode(5, INPUT_PULLUP);
+  pinMode(7, INPUT_PULLUP);
   pinMode(9, INPUT_PULLUP);
+  pinMode(10, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
 
-//  pinMode(13, OUTPUT);
-
+  Keyboard.begin();
 }
 
 void loop() {
+  int pin_3 = digitalRead(3);
+  int pin_5 = digitalRead(5);
+  int pin_7 = digitalRead(7);
+  int pin_9 = digitalRead(9);
+  int pin_10 = digitalRead(10);
+  int pin_14 = digitalRead(14);
 
-  //read the pushbutton value into a variable
-
-  int sensorVal = digitalRead(9);
-
-  //print out the value of the pushbutton
-
-//  Serial.println(sensorVal);
-
-  // Keep in mind the pull-up means the pushbutton's logic is inverted. It goes
-
-  // HIGH when it's open, and LOW when it's pressed. Turn on pin 13 when the
-
-  // button's pressed, and off when it's not:
-
-  if (sensorVal == HIGH) {
-
-    Serial.println("high");
-
+  if (pin_3 == LOW) {
+    Serial.println("3");
+  } else if (pin_5 == LOW) {
+    Serial.println("5");
+  } else if (pin_7 == LOW) {
+    openProgram("iterm");
+    pressKey(KEY_F18);
+    Keyboard.releaseAll();
+    pressKey(KEY_RETURN);
+    Keyboard.releaseAll();
+    openProgram("sublime text");
+  } else if (pin_9 == LOW) {
+    Serial.println("9");
+  } else if (pin_10 == LOW) {
+    Serial.println("10");
+  } else if (pin_14 == LOW) {
+    Serial.println("14");
   } else {
-
-    Serial.println("low");
-
+    Serial.println("no button pressed");  
   }
+  
+}
+
+void openProgram(String programName) {
+  openSpotlight();
+  inputText(programName);
+  pressKey(KEY_RETURN);
+  Keyboard.releaseAll();
+}
+
+void openSpotlight() {
+  pressKey(KEY_RIGHT_GUI);
+  pressKey(' ');
+  Keyboard.releaseAll();
+}
+
+void pressKey(int key) {
+  Keyboard.press(key);
+  delay(DEFAULT_DELAY);
+}
+
+void inputText(String text) {
+  Keyboard.print(text);
+  delay(DEFAULT_DELAY);
+  Keyboard.releaseAll();
 }
